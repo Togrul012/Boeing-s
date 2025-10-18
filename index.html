@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boeing Super Saytı — Modern Dark</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="boeing-png-logo-568134.png">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+         :root {
+            --bg-dark: #0b0f14;
+            --panel: rgba(255, 255, 255, 0.04);
+            --glass: rgba(255, 255, 255, 0.04);
+            --muted: #9aa5b1;
+            --accent: #6ee7b7;
+            --card-hover: rgba(255, 255, 255, 0.03);
+        }
+        /* Light mode variables (will be enabled via .light-mode on body) */
+        
+        body.light-mode {
+            --bg-dark: #f7f9fb;
+            --panel: rgba(10, 25, 47, 0.04);
+            --glass: rgba(255, 255, 255, 0.9);
+            --muted: #5b6b7a;
+            --accent: #0d9488;
+            --card-hover: rgba(13, 148, 136, 0.04);
+        }
+        
+        html,
+        body {
+            height: 100%;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(255, 255, 255, 0.02), transparent 10%), radial-gradient(800px 400px at 90% 90%, rgba(255, 255, 255, 0.01), transparent 10%), var(--bg-dark);
+            color: #e6eef3;
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            scroll-behavior: smooth;
+        }
+        /* Navbar / header */
+        
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .site-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6ee7b7, #34d399);
+            box-shadow: 0 6px 18px rgba(52, 211, 153, 0.12), 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        /* Main layout */
+        
+        .container-main {
+            padding-top: 90px;
+            padding-bottom: 60px;
+        }
+        /* Left panel (can be hidden on small screens) */
+        
+        .panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(6px) saturate(1.1);
+        }
+        
+        .search-input {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: inherit;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        
+        .aircraft-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .18s, transform .12s;
+        }
+        
+        .aircraft-item:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+        
+        .aircraft-thumb {
+            width: 56px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            flex-shrink: 0;
+        }
+        
+        .aircraft-meta {
+            font-size: 14px;
+            line-height: 1;
+        }
+        
+        .aircraft-meta .name {
+            font-weight: 600;
+            color: #f6fbff;
+        }
+        
+        .aircraft-meta .year {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        /* Main card */
+        
+        .show-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 360px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.35));
+        }
+        
+        .info-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .specs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+        
+        .specs-list li {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        
+        .badge-type {
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--muted);
+        }
+        
+        .muted {
+            color: var(--muted);
+        }
+        /* Toggle button */
+        
+        .mode-toggle {
+            border-radius: 999px;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        /* Small screens spacing */
+        
+        @media (max-width:991px) {
+            .hero-image {
+                height: 220px;
+            }
+        }
+        /* Footer */
+        
+        footer.small-foot {
+            color: var(--muted);
+            padding: 18px 0;
+        }
+        /* subtle entrance animation */
+        
+        .fade-up {
+            transform-origin: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAV -->
+    <nav class="navbar navbar-dark fixed-top" style="backdrop-filter: blur(8px); background: linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.25)); border-bottom: 1px solid rgba(255,255,255,0.03);">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-dark d-flex align-items-center p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu" aria-label="Menyu aç">
+          <!-- hamburger -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#e6eef3"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+                <a class="navbar-brand site-badge text-white" href="#" style="text-decoration:none;">
+                    <span class="logo-dot"></span>
+                    <span style="margin-left:6px">Boeing Super</span>
+                    <small class="d-none d-md-inline text-muted" style="margin-left:8px; font-weight:600; color:var(--muted)">— 1916 → 2025</small>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <div class="me-2 muted d-none d-md-block">Tema</div>
+                <button id="modeToggle" class="btn mode-toggle" title="Gecə/Gündüz rejimi">
+          <span id="modeIcon">🌙</span>
+        </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Menu (hamburger list of aircrafts) -->
+    <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel" style="background: linear-gradient(180deg, rgba(8,12,16,0.96), rgba(4,6,8,0.96));">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Təyyarələr</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Bağla"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="panel mb-3">
+                <input id="menuSearch" class="search-input w-100" placeholder="Axtar — Boeing 777..." />
+            </div>
+
+            <div id="menuList" style="max-height:60vh; overflow:auto; padding-right:6px;">
+                <!-- JS will populate this list -->
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.03);" />
+            <div class="muted small">Siyahıdan bir təyyarəyə vur — mərkəzdə onun detalları açılacaq.</div>
+        </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <main class="container container-main">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <div class="panel">
+                    <h5 style="margin-bottom:6px">Sürətli Filtrlər</h5>
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-sm btn-outline-light flex-grow-1 filter-btn active" data-filter="all">Hamısı</button>
+                        <button class="btn btn-sm btn-outline-light flex-grow-1 filter-btn" data-filter="commercial">Kommersiya</button>
+                        <button class="btn btn-sm btn-outline-light flex-grow-1 filter-btn" data-filter="military">Hərbi</button>
+                        <button class="btn btn-sm btn-outline-light flex-grow-1 filter-btn" data-filter="historical">Tarixi</button>
+                    </div>
+
+                    <h6 class="mt-2 muted">Seçilmişlər</h6>
+                    <div id="quickList" class="mt-2" style="display:grid; gap:8px;">
+                        <!-- quick items -->
+                    </div>
+
+                    <hr style="border-color: rgba(255,255,255,0.03);" />
+                    <div class="muted small">Məlumat mənbəyi: müxtəlif açıq mənbələr və təsvir nümunələri.</div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="show-card fade-up" id="detailCard">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="muted small">Model</div>
+                            <h3 id="detailTitle" style="margin:0">Yüklənir...</h3>
+                            <div class="d-flex gap-2 align-items-center mt-2">
+                                <span id="detailTypeBadge" class="badge-type">—</span>
+                                <span class="muted small ms-2" id="detailYear">—</span>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button id="openMenuBtn" class="btn btn-sm btn-outline-light d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu">Siyahı</button>
+                            <div class="muted small mt-2">Şəkil mənbə: Unsplash / Wikimedia</div>
+                        </div>
+                    </div>
+
+                    <img id="detailImage" class="hero-image mb-3" src="" alt="Təyyarə şəkli" />
+
+                    <p id="detailDesc" class="muted mb-3">—</p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Texniki Xüsusiyyətlər</h6>
+                            <ul class="specs-list mt-2" id="specsList">
+                                <!-- specs injected -->
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+
+                            <h6>Əlavə</h6>
+                            <p class="muted small">Aşağıdakı düymələr məlumatı animasiyalı şəkildə yeniləyir. Menyuda fərqli model seçərək daha çoxunu gör.</p>
+                            <div class="mt-3 d-flex gap-2">
+                                <button id="prevBtn" class="btn btn-sm btn-outline-light">◀ Önceki</button>
+                                <button id="nextBtn" class="btn btn-sm btn-outline-light">Sonrakı ▶</button>
+                                <button id="expandBtn" class="btn btn-sm btn-light text-dark">Ətraflı</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="small-foot mt-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>&copy; <strong>Boeing Super Saytı</strong> — 1916–2025</div>
+                <div class="muted">Dizayn: Modern dark • Hazırlayan: Toğrul üçün demo</div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App JS -->
+    <script>
+        // --- DATA: aircrafts with image URLs (Unsplash / Wikimedia queries for demo) ---
+        const aircrafts = [{
+                model: "Boeing 777",
+                year: "1994",
+                type: "commercial",
+                description: "Boeing 777 — twin-engine widebody uzun məsafəli təyyarə. Komfortlu kabin və yüksək iqtisadiyyat üçün dizayn edilib.",
+                specs: {
+                    span: "199 ft 11 in",
+                    length: "209 ft 1 in",
+                    speed: "615 mph",
+                    range: "4,210–8,270 mi",
+                    capacity: "301–550"
+                },
+                image: "https://static0.simpleflyingimages.com/wordpress/wp-content/uploads/2024/02/shutterstock_2392181251-1.jpg"
+            }, {
+                model: "Boeing 787 Dreamliner",
+                year: "2009",
+                type: "commercial",
+                description: "787 Dreamliner — yüngül kompozit materiallardan istehsal edilmiş, yanacaq səmərəliliyi yüksək olan genişcəsimli təyyarədir.",
+                specs: {
+                    span: "197 ft 3 in",
+                    length: "186 ft",
+                    speed: "Mach 0.85",
+                    range: "7,650–8,200 nm",
+                    capacity: "210–330"
+                },
+                image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Boeing_787_N1015B_ANA_Airlines_%2827611880663%29_%28cropped%29.jpg"
+            }, {
+                model: "Boeing 747",
+                year: "1969",
+                type: "commercial",
+                description: "747 — ikonik 'Jumbo Jet'. Böyük sərnişin tutumu və uzun tarixə sahib.",
+                specs: {
+                    span: "195 ft 8 in",
+                    length: "231 ft 4 in",
+                    speed: "640 mph",
+                    range: "6,000 mi",
+                    capacity: "374–490"
+                },
+                image: "https://www.historylink.org/Content/Media/Photos/Small/747-02.JPG"
+            }, {
+                model: "B-17 Flying Fortress",
+                year: "1941",
+                type: "military",
+                description: "B-17 — II Dünya Müharibəsi dövründə istifadə olunan ağır bombardmançı.",
+                specs: {
+                    span: "103 ft 9 in",
+                    length: "74 ft 4 in",
+                    speed: "287 mph",
+                    range: "2,000 mi",
+                    capacity: "10"
+                },
+                image: "https://theaviationgeekclub.com/wp-content/uploads/2021/10/B-17D.jpg"
+            }, {
+                model: "F-22 Raptor",
+                year: "1997",
+                type: "military",
+                description: "F-22 — inkişaf etmiş stealth-capable taktiki aviasiya döyüş təyyarəsi.",
+                specs: {
+                    span: "44 ft 6 in",
+                    length: "62 ft 1 in",
+                    speed: "1,500 mph",
+                    range: "1,840 mi",
+                    capacity: "1"
+                },
+                image: "https://aviadejavu.ru/Images6/AK/AK2014-07/46-2.jpg"
+            }, {
+                model: "C-17 Globemaster III",
+                year: "1991",
+                type: "military",
+                description: "C-17 — taktiki və strateji hərbi yük daşıma təyyarəsi.",
+                specs: {
+                    span: "169 ft 10 in",
+                    length: "174 ft",
+                    speed: "450 knots",
+                    range: "2,785 mi",
+                    capacity: "102 troops"
+                },
+                image: "https://upload.wikimedia.org/wikipedia/commons/b/bc/C-17_test_sortie.jpg"
+            }, {
+                model: "B-2 Spirit",
+                year: "1989",
+                type: "military",
+                description: "B-2 — stealth strateji bombardmançı, xüsusi missiyalar üçün nəzərdə tutulub.",
+                specs: {
+                    span: "172 ft",
+                    length: "69 ft",
+                    speed: "628 mph",
+                    range: "6,900 mi",
+                    capacity: "2"
+                },
+                image: "https://www.mozaweb.com/ru/mozaik3D/TOR/modernkor/b2/960.jpg"
+            }, {
+                model: "Model 1 (1916)",
+                year: "1916",
+                type: "historical",
+                description: "William Boeing və George Westervelt tərəfindən hazırlanmış ilk Boeing seaplane.",
+                specs: {
+                    span: "52 ft",
+                    length: "27 ft",
+                    speed: "75 mph",
+                    range: "336 mi",
+                    capacity: "2"
+                },
+                image: "https://i.ebayimg.com/images/g/WnYAAOSwLVZVjShF/s-l1200.jpg"
+            }, {
+                model: "MD-11",
+                year: "1990",
+                type: "commercial",
+                description: "Trijet tiplə geniş cəsimli yük/sərnişin təyyarəsi.",
+                specs: {
+                    span: "169 ft 6 in",
+                    length: "200 ft 10 in",
+                    speed: "587 mph",
+                    range: "7,130 mi",
+                    capacity: "298"
+                },
+                image: "https://external-preview.redd.it/-0jblRu9oFWV6St_TLSjZ8kAoUnf-z2OkC-ByTbRWwk.jpg?auto=webp&s=76d8cc2458dbee175864106b7d82f2b26a11bfeb"
+            }
+            // İstəsən daha çox təyyarə əlavə edə bilərik.
+        ];
+
+        // --- App state ---
+        let filteredList = [...aircrafts];
+        let currentIndex = 0;
+
+        // --- DOM Refs ---
+        const menuList = document.getElementById('menuList');
+        const menuSearch = document.getElementById('menuSearch');
+        const quickList = document.getElementById('quickList');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailTypeBadge = document.getElementById('detailTypeBadge');
+        const detailYear = document.getElementById('detailYear');
+        const detailImage = document.getElementById('detailImage');
+        const detailDesc = document.getElementById('detailDesc');
+        const specsList = document.getElementById('specsList');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const expandBtn = document.getElementById('expandBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const modeToggle = document.getElementById('modeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+
+        // --- Utilities ---
+        function createAircraftElement(a, idx) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'aircraft-item';
+            wrapper.dataset.idx = idx;
+            wrapper.innerHTML = `
+        <img src="${a.image}" class="aircraft-thumb" alt="${a.model}" loading="lazy" />
+        <div class="aircraft-meta">
+          <div class="name">${a.model}</div>
+          <div class="year">${a.year} • ${a.type}</div>
+        </div>
+      `;
+            wrapper.addEventListener('click', () => {
+                selectAircraftByIdx(idx);
+                // close offcanvas if open (for mobile)
+                const off = bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasMenu'));
+                if (off) off.hide();
+            });
+            return wrapper;
+        }
+
+        function renderMenu(list) {
+            menuList.innerHTML = '';
+            if (!list.length) {
+                const no = document.createElement('div');
+                no.className = 'muted small';
+                no.textContent = 'Nəticə tapılmadı.';
+                menuList.appendChild(no);
+                return;
+            }
+            list.forEach((a, idx) => menuList.appendChild(createAircraftElement(a, idx)));
+        }
+
+        function renderQuick(list) {
+            quickList.innerHTML = '';
+            // show first 4 as quick picks
+            list.slice(0, 6).forEach((a, idx) => {
+                const el = document.createElement('div');
+                el.className = 'aircraft-item';
+                el.innerHTML = `
+          <img src="${a.image}" class="aircraft-thumb" alt="${a.model}" loading="lazy" />
+          <div class="aircraft-meta">
+            <div class="name">${a.model}</div>
+            <div class="year">${a.year}</div>
+          </div>
+        `;
+                el.addEventListener('click', () => selectAircraftByIdx(idx));
+                quickList.appendChild(el);
+            });
+        }
+
+        function showDetails(a) {
+            // animate out, update, animate in
+            const tl = gsap.timeline();
+            tl.to('#detailCard', {
+                duration: 0.18,
+                opacity: 0.5,
+                y: 6
+            });
+            tl.call(() => {
+                detailTitle.textContent = a.model;
+                detailTypeBadge.textContent = a.type.toUpperCase();
+                detailYear.textContent = a.year;
+                detailImage.src = a.image;
+                detailImage.alt = a.model;
+                detailDesc.textContent = a.description;
+
+                specsList.innerHTML = '';
+                for (const [k, v] of Object.entries(a.specs)) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong style="color:#fff">${k.charAt(0).toUpperCase()+k.slice(1)}:</strong> <span class="muted"> ${v}</span>`;
+                    specsList.appendChild(li);
+                }
+            });
+            tl.to('#detailCard', {
+                duration: 0.4,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            });
+            // small image pop
+            gsap.from('#detailImage', {
+                duration: 0.7,
+                scale: 0.98,
+                opacity: 0.9,
+                ease: "power3.out"
+            });
+        }
+
+        function selectAircraftByIdx(idx) {
+            // idx refers to filteredList index (but in menu we used original indices) — reconcile:
+            // In our implementation in createAircraftElement we used original aircrafts index.
+            // So if idx is index in original array, find it in filteredList to set currentIndex relative - easier to set global to original index.
+            currentIndex = idx;
+            const a = aircrafts[currentIndex];
+            showDetails(a);
+            highlightSelectedInMenu(currentIndex);
+        }
+
+        function highlightSelectedInMenu(origIdx) {
+            // remove others
+            menuList.querySelectorAll('.aircraft-item').forEach(el => {
+                el.style.outline = '';
+            });
+            const sel = menuList.querySelector(`[data-idx="${origIdx}"]`);
+            if (sel) {
+                sel.style.outline = "2px solid rgba(110,231,183,0.12)";
+                gsap.fromTo(sel, {
+                    x: -6,
+                    opacity: 0.8
+                }, {
+                    x: 0,
+                    opacity: 1,
+                    duration: 0.28
+                });
+            }
+        }
+
+        // --- Filtering / Searching ---
+        menuSearch.addEventListener('input', (e) => {
+            const q = e.target.value.trim().toLowerCase();
+            const list = aircrafts.map((a, i) => ({
+                a,
+                i
+            })).filter(x => {
+                return x.a.model.toLowerCase().includes(q) || x.a.description.toLowerCase().includes(q) || x.a.type.toLowerCase().includes(q);
+            });
+            // render using original indices
+            menuList.innerHTML = '';
+            if (!list.length) {
+                menuList.innerHTML = `<div class="muted small">Nəticə tapılmadı.</div>`;
+                return;
+            }
+            list.forEach(x => menuList.appendChild(createAircraftElement(x.a, x.i)));
+        });
+
+        // filter buttons
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const f = btn.dataset.filter;
+                if (f === 'all') {
+                    renderMenu(aircrafts);
+                    renderQuick(aircrafts);
+                } else {
+                    const sub = aircrafts.filter(a => a.type === f);
+                    renderMenu(sub.map((a, i) => {
+                        // We need original indices to be preserved; so find original indexes and use createAircraftElement with orig index
+                        return a;
+                    }));
+                    // simpler: build menu from original array filtering by type but preserving original indices:
+                    menuList.innerHTML = '';
+                    aircrafts.forEach((a, i) => {
+                        if (a.type === f) menuList.appendChild(createAircraftElement(a, i));
+                    });
+                    renderQuick(aircrafts.filter(a => a.type === f));
+                }
+            });
+        });
+
+        // Prev/Next navigation (wrap)
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + aircrafts.length) % aircrafts.length;
+            selectAircraftByIdx(currentIndex);
+            // scroll to selected in offcanvas list if visible
+            scrollMenuToCurrent();
+        });
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % aircrafts.length;
+            selectAircraftByIdx(currentIndex);
+            scrollMenuToCurrent();
+        });
+
+        function scrollMenuToCurrent() {
+            const el = menuList.querySelector(`[data-idx="${currentIndex}"]`);
+            if (el) el.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+
+        // Expand button - opens a modal-like detail (simple)
+        expandBtn.addEventListener('click', () => {
+                    const a = aircrafts[currentIndex];
+                    const content = `
+        <div style="padding:18px;color:#0b0f14">
+          <h3 style="margin-top:0">${a.model} (${a.year})</h3>
+          <img src="${a.image}" style="width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:12px" />
+          <p style="color:#1f2937">${a.description}</p>
+          <ul style="color:#334155">
+            ${Object.entries(a.specs).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+      // simple full-screen pseudo-modal created via DOM
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed'; overlay.style.inset = 0; overlay.style.zIndex = 11000;
+      overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+      overlay.style.background = 'linear-gradient(180deg, rgba(2,6,23,0.9), rgba(2,6,23,0.95))';
+      overlay.innerHTML = `<div style="width:90%;max-width:900px;border-radius:14px;overflow:auto">${content}</div>`;
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) document.body.removeChild(overlay); });
+      document.body.appendChild(overlay);
+      gsap.from(overlay.firstChild, { duration:0.45, y: 20, opacity: 0, scale: 0.98 });
+    });
+
+    // Mode toggle
+    function setMode(isLight) {
+const toggleBtn = document.getElementById("modeToggle");
+toggleBtn.addEventListener("click", () => {
+  const body = document.body;
+  const isLight = body.classList.toggle("light-mode");
+  toggleBtn.textContent = isLight ? "☀️" : "🌙";
+
+  // 🌗 ANİMASİYA — rəng keçidi və parıltı effekti
+  gsap.fromTo("body",
+    { opacity: 0.6, filter: "brightness(0.7)" },
+    { opacity: 1, filter: "brightness(1)", duration: 1.2, ease: "power2.out" }
+  );
+
+  // Yazıların rəngi də axıcı dəyişsin
+  gsap.fromTo("h1, h2, h3, p, li, a, span",
+    { color: isLight ? "#e5eaf0" : "#0a0f14" },
+    { color: isLight ? "#0a0f14" : "#e5eaf0", duration: 1.2, stagger: 0.02 }
+  );
+});
+
+    }
+    modeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-mode');
+      setMode(isLight);
+      // animate toggle
+      gsap.from(modeToggle, { duration: 0.25, scale: 0.98 });
+    });
+
+    
+    // initial mode from localStorage or prefers-color-scheme
+    (function initMode(){
+      const saved = localStorage.getItem('ui_mode');
+      if (saved === 'light') setMode(true);
+      else if (saved === 'dark') setMode(false);
+      else {
+        // default to dark, or detect system preference
+        const preferLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        setMode(preferLight);
+      }
+    })();
+
+    // Populate menu & quick list
+    function init() {
+      // render menu preserving original indices
+      menuList.innerHTML = '';
+      aircrafts.forEach((a, i) => menuList.appendChild(createAircraftElement(a, i)));
+      renderQuick(aircrafts);
+      // default selection: try to select Boeing 777 if present
+      const defaultIdx = aircrafts.findIndex(a => a.model.toLowerCase().includes('777')) || 0;
+      currentIndex = defaultIdx >=0 ? defaultIdx : 0;
+      selectAircraftByIdx(currentIndex);
+
+      // nice entrance animation for the list
+      gsap.from('.aircraft-item', { duration: 0.8, opacity:0, y: 12, stagger: 0.05, ease: "power2.out" });
+      gsap.from('.show-card', { duration: 0.9, opacity:0, y: 12, delay: 0.12, ease: "power2.out" });
+
+      // menu search: allow Enter key to focus first result
+      menuSearch.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const first = menuList.querySelector('.aircraft-item');
+          if (first) first.click();
+        }
+      });
+    }
+
+    // allow clicking on aircraft items that are created in quickList to open correct original index
+    // (we used idx relative to a slice; to ensure correct behavior, quickList click uses original indices - simplified above)
+
+    // initialize
+    init();
+
+    // make sure images are not blank on slow networks (fallback)
+    detailImage.addEventListener('error', () => {
+      detailImage.src = 'https://via.placeholder.com/1400x800?text=Image+not+available';
+    });
+
+    // Accessibility: close offcanvas with Escape key (Bootstrap handles normally) but ensure focus
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const off = bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasMenu'));
+        if (off) off.hide();
+      }
+    });
+    </script>
+</body>
+
+</html>
